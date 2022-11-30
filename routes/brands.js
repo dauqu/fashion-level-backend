@@ -73,7 +73,7 @@ router.patch('/update/:id', async (req, res) => {
         const get_brand = await Brand.findOneAndUpdate({_id: id}, update, {new: false});
         get_brand.save();
 
-        return res.status(200).json({})
+        return res.status(200).json({message: "Brand Updated", status: "success"})
 
     }catch(e){
         return res.status(400).json({message: e.message, status: "error"})

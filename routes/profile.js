@@ -216,7 +216,7 @@ router.post('/verify-phone', async (req, res) => {
 });
 
 
-//Forgot Password
+//Change Password
 router.post('/change-password', async (req, res) => {
     const token = req.cookies.auth_token || req.headers['x-auth-token'] || req.body.token;
 

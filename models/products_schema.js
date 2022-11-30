@@ -48,11 +48,11 @@ const ProductsSchema = new mongoose.Schema({
             type: Array,
             required: true,
             start_date: {
-                type: Date,
+                type: String,
                 required: true,
             },
             end_date: {
-                type: Date,
+                type: String,
                 required: true,
             },
         },

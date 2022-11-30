@@ -29,8 +29,6 @@ router.get('/:id', async (req, res) => {
 //Create notification
 router.post('/', async (req, res) => {
 
-    console.log(req.body);
-
     const notification = new Notification({
         title: req.body.title,
         description: req.body.description,

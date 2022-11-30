@@ -91,9 +91,22 @@ app.use(`${apiv1}/categories`, require("./routes/categories"));
 app.use(`${apiv1}/notifications`, require("./routes/notifications"));
 app.use(`${apiv1}/brands`, require("./routes/brands"));
 app.use(`${apiv1}/promo`, require("./routes/promo"));
+app.use(`${apiv1}/products`, require("./routes/products"));
+app.use(`${apiv1}/store`, require("./routes/store"));
 
 
-// app.use(`${apiv1}/report`, require("./routes/report"));
+app.use(`${apiv1}/orders`, require("./routes/orders"));
+app.use(`${apiv1}/cart`, require("./routes/cart"));
+app.use(`${apiv1}/favorite`, require("./routes/favorite"));
+app.use(`${apiv1}/post`, require("./routes/post"));
+app.use(`${apiv1}/report`, require("./routes/report"));
+app.use(`${apiv1}/staff`, require("./routes/staff"));
+app.use(`${apiv1}/statement`, require("./routes/statement"));
+app.use(`${apiv1}/wallet`, require("./routes/wallet"));
+
+
+app.use(`${apiv1}/dashboard`, require("./routes/dashboard"));
+
 // app.use(`${apiv1}/users`, require("./routes/users"));
 // app.use(`${apiv1}/vehicles`, require("./routes/vehicles"));
 // app.use(`${apiv1}/v-colors`, require("./routes/v-colors"));

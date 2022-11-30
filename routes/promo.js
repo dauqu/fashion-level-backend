@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 
 //get promo codes by id
 router.get('/:id', async (req, res) => {
-    const {id} = req.body;
+    const {id} = req.params;
     try{
         const promoCode = await Promo.findOne({_id: id});
         if(promoCode) res.status(200).json(promoCode);
@@ -47,7 +47,16 @@ router.delete('/:id', async (req, res) => {
 })
 
 //update promo code by id
-
+router.patch('/:id', async (req, res) => {
+    const {id} = req.params;
+    try{
+        const update_promo = await Promo.findOneAndUpdate({_id: id}, req.body, {new: false});
+        await update_promo.save();
+        return res.status(200).json({message: "Promo code updated.", status: "success"});
+    }catch(e){
+        res.status(400).json({ message: e.message, status: "error"})
+    }
+})
 
 
 async function CheckPromoCode(req, res, next){
