@@ -33,6 +33,15 @@ const StoreSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    quantity_sold: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    status: {
+        type: String,
+        required: false
+    }
 });
 
 module.exports = mongoose.model("Store", StoreSchema);

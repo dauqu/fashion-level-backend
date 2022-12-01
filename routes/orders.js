@@ -36,8 +36,8 @@ router.post('/', async (req, res) => {
         if(save_order){
             res.json({"message": "Order Succesfully Added", status: "success"})
         }
-    }catch{
-        res.json({"message": "Order not Added", status: "error"})
+    }catch(e){
+        res.json({"message": e.message, status: "error"})
     }
     
 })

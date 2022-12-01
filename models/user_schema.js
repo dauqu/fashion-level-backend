@@ -56,6 +56,15 @@ const UserSchema = new mongoose.Schema({
     country: {
         type: String,
         required: true
+    },
+    status: {
+        type: String,
+        required: false
+    },
+    total_orders: {
+        type: Number,
+        required: true,
+        default: 0
     }
 },
 {

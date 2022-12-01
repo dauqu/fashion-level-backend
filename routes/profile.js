@@ -286,9 +286,33 @@ router.post('/forgot-password', async (req, res) => {
 
     //Send OTP
     SendEmail(email, otp);
-
+    
     res.status(200).json({ message: "OTP sent", status: "success" });
 });
+
+router.patch('/increment-order/:user_id', async (req, res) => {
+    try {
+        const {user_id} = req.params;
+        const { increment_by }= req.body;
+
+        if( increment_by === ""
+            || increment_by === null
+            || increment_by == undefined 
+            || isNaN(Number(increment_by))
+            || Number(increment_by) <= 0
+        ){
+            return res.status(404).json({message: "cannot updated by null", status: "warning"})
+        }
+        const find_user = await User.findById(user_id);
+        if(!user_id) {
+            return res.status(404).json({message: "User not found", status: "warning"})
+        }
+        await User.findByIdAndUpdate(user_id, {$inc: {total_orders: increment_by}})
+        return res.status(404).json({message: "User order count updated", status: "warning"})
+    } catch (e) {
+        return res.status(500).json({message: e.message, status: "error"})
+    }
+})
 
 
 

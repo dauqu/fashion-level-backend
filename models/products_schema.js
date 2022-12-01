@@ -109,6 +109,16 @@ const ProductsSchema = new mongoose.Schema({
             required: true,
         },
     },
+    total_orders: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    quantity_sold: {
+        type: Number,
+        required: true,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model("Products", ProductsSchema);

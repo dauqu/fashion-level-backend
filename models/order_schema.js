@@ -23,9 +23,29 @@ const OrderSchema = new mongoose.Schema({
             }
         }
     },
-    storeId: {
-        type: String,
-        required: true
+    user_details: {
+        type: Array,
+        required: false,
+        user_id: {
+            type: String,
+            required: true
+        },
+        user_name: {
+            type: String,
+            required: true,
+        }
+    },
+    store: {
+        type: Array,
+        required: true,
+        store_id: {
+            type: String,
+            required: true
+        },
+        store_name: {
+            type: String,
+            required: true
+        }
     },
     pickup_slot: {
         type: String,
