@@ -47,7 +47,7 @@ router.post("/", checkUser, async (req, res) => {
     //Set cookie
     res.cookie("auth_token", token, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 300,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true,
     }); //300 days
@@ -63,6 +63,7 @@ router.post("/", checkUser, async (req, res) => {
     res.status(500).json({ message: error.message, status: "error" });
   }
 });
+
 
 //Check User is login or not
 router.get("/isLoggedIn", async (req, res) => {

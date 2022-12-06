@@ -9,43 +9,15 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         required: true     
     },
-    products: {
-        type: Array,
-        required: true,
-        product: {
-            product_id: {
-                type: String,
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true
-            }
+    products: [
+        {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Products"
         }
-    },
-    user_details: {
-        type: Array,
-        required: false,
-        user_id: {
-            type: String,
-            required: true
-        },
-        user_name: {
-            type: String,
-            required: true,
-        }
-    },
-    store: {
-        type: Array,
-        required: true,
-        store_id: {
-            type: String,
-            required: true
-        },
-        store_name: {
-            type: String,
-            required: true
-        }
+    ],
+    user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User"
     },
     pickup_slot: {
         type: String,
@@ -54,6 +26,11 @@ const OrderSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true
+    },
+    payment_status: {
+        type: String,
+         required: true,
+         default: "unpaid"
     }
 },{
     timestamps: true

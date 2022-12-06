@@ -1,7 +1,11 @@
 const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema({
-    full_name: {
+    first_name: {
+        type: String,
+        required: true
+    },
+    last_name:{
         type: String,
         required: true
     },
@@ -9,15 +13,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    title: {
-        type: String,
-        required: true
-    },
-    about: {
-        type: String,
-        required: true
-    },
-    phone: {
+    phone_no: {
         type: Number,
         required: true
     },
@@ -59,7 +55,8 @@ const UserSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        required: false
+        required: false,
+        default: "active"
     },
     total_orders: {
         type: Number,

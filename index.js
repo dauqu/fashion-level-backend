@@ -1,12 +1,14 @@
 require('dotenv').config()
 const express = require("express");
-const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const ws = require("ws");
+const bodyParser = require("body-parser")
 
+
+const PORT = process.env.PORT || 4000;
 const app = express();
-//Cookies0
 
+//Cookies
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
@@ -15,11 +17,10 @@ app.use(cookieParser());
 // const random = Math.floor(10000 + Math.random() * 80000);
 // console.log(random);
 
-const PORT = process.env.PORT || 4000;
 
 //Allow cors
 //Loop of allowed origins
-const allowedOrigins = ["http://localhost:3001", "http://localhost:3000", "https://blabla-car.vercel.app"];
+const allowedOrigins = ["http://localhost:3001", "http://localhost:3000", "https://fashion-lavel.vercel.app"];
 
 app.use(
   cors({
@@ -30,16 +31,11 @@ app.use(
 
 //Allow JSON to be parsed
 app.use(express.json());
-
-// Enable file upload using express-fileupload
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}))
 
 //Allow static files
-app.use(express.static(__dirname + "/files"));
+app.use(express.static("./medias/"));
 
 
 //Create websocket server on port 4000
@@ -84,6 +80,7 @@ app.get("/files", (req, res) => {
 const apiv1 = "/api/v1";
 
 
+app.use(`${apiv1}/admin`, require("./routes/admin"));
 app.use(`${apiv1}/login`, require("./routes/login"));
 app.use(`${apiv1}/register`, require("./routes/register"));
 app.use(`${apiv1}/profile`, require("./routes/profile"));
@@ -107,6 +104,7 @@ app.use(`${apiv1}/wallet`, require("./routes/wallet"));
 
 app.use(`${apiv1}/dashboard`, require("./routes/dashboard"));
 app.use(`${apiv1}/users`, require("./routes/users"));
+app.use(`${apiv1}/wallet-transaction`, require("./routes/WalletTransactions"));
 
 // app.use(`${apiv1}/users`, require("./routes/users"));
 // app.use(`${apiv1}/vehicles`, require("./routes/vehicles"));

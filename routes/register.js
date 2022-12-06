@@ -22,11 +22,10 @@ router.post("/", validateRegister, async (req, res) => {
   // Save user to database
 
   const save_user = new User({
-    full_name: req.body.full_name,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
     dp: "https://styles.redditmedia.com/t5_2c83sr/styles/profileIcon_4dwzf4syg0w51.png",
-    title: "I am new here :)",
-    about: "Edit your profile to add more information about yourself",
-    phone: req.body.phone,
+    phone_no: req.body.phone_no,
     phone_verified: false,
     email: req.body.email,
     email_verified: false,
@@ -51,22 +50,25 @@ router.post("/", validateRegister, async (req, res) => {
 
 //Middleware for register validation
 async function validateRegister(req, res, next) {
-  const { full_name, phone, email, username, password } = req.body;
+  const { first_name, last_name, phone_no, email, username, password } = req.body;
 
   //Check if all fields are filled
   if (
-    full_name === "" ||
-    phone === "" ||
+    first_name === "" ||
+    last_name === "" ||
+    phone_no === "" ||
     email === "" ||
     username === "" ||
     password === "" ||
-    full_name === undefined ||
-    phone === undefined ||
+    first_name === undefined ||
+    last_name === undefined ||
+    phone_no === undefined ||
     email === undefined ||
     username === undefined ||
     password === undefined ||
-    full_name === null ||
-    phone === null ||
+    first_name === null ||
+    last_name === null ||
+    phone_no === null ||
     email === null ||
     username === null ||
     password === null
@@ -118,14 +120,14 @@ async function validateRegister(req, res, next) {
 
   //Check phone is valid
   const phone_regex = /^[0-9]{10}$/;
-  if (!phone_regex.test(phone))
+  if (!phone_regex.test(phone_no))
     return res.status(400).json({
       message: "Phone is not valid",
       status: "error",
     });
 
   //Check phone is unique
-  const phone_exists = await User.findOne({ phone: phone });
+  const phone_exists = await User.findOne({ phone_no: phone_no });
   if (phone_exists)
     return res.status(400).json({
       message: "Phone is already exists",

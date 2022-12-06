@@ -2,13 +2,9 @@ const mongoose = require("mongoose");
 
 const ProductsSchema = new mongoose.Schema({
     name: {
-        type: Array,
+        type: Object,
         required: true,
         product_name: {
-            type: String,
-            required: true,
-        },
-        brand: {
             type: String,
             required: true,
         },
@@ -29,8 +25,12 @@ const ProductsSchema = new mongoose.Schema({
             required: true,
         },
     },
+    brand: {
+        type:mongoose.SchemaTypes.ObjectId,
+        ref: "Brand"
+    },
     product_price_stock: {
-        type: Array,
+        type: Object,
         required: true,
         unit_price: {
             type: Number,
@@ -45,7 +45,7 @@ const ProductsSchema = new mongoose.Schema({
             required: true,
         },
         discount_data_range: {
-            type: Array,
+            type: Object,
             required: true,
             start_date: {
                 type: String,
@@ -62,7 +62,7 @@ const ProductsSchema = new mongoose.Schema({
         },
     },
     product_images: {
-        type: Array,
+        type: Object,
         required: true,
         image: {
             type: String,
@@ -74,7 +74,7 @@ const ProductsSchema = new mongoose.Schema({
         },
     },
     product_description: {
-        type: Array,
+        type: Object,
         required: true,
         description: {
             type: String,
@@ -86,7 +86,7 @@ const ProductsSchema = new mongoose.Schema({
         },
     },
     slect_your_size_chart: {
-        type: Array,
+        type: Object,
         required: true,
         size: {
             type: String,
@@ -98,7 +98,7 @@ const ProductsSchema = new mongoose.Schema({
         },
     },
     settings: {
-        type: Array,
+        type: Object,
         required: true,
         product_status: {
             type: String,
@@ -118,6 +118,10 @@ const ProductsSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    store: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Store"
     }
 });
 

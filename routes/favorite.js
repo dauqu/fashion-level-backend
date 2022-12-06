@@ -1,5 +1,5 @@
 const Favorite = require('../models/favorite_schema');
-const getUserDetails = require('../options/getuserdeatails');
+const getUserDetails = require('../config/getuserdetails');
 const tokenIsValid = require('../config/TokenIsValid');
 const router = require("express").Router();
 

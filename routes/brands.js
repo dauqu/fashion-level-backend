@@ -1,8 +1,31 @@
 const router = require('express').Router();
 
+const upload = require('../config/fileuploader');
 const Brand = require("../models/brand_schema");
 
+
 // get all brands 
+router.get('/page/:page_no', async (req, res) => {
+    try {        
+        const {page_no} = req.params;
+    
+        let PageNo = Number(page_no);
+        if(PageNo <= 0) return res.status(400).json({message: "Invalid page no", status: "warning"})
+    
+        let toSkip = (PageNo - 1) * 10;
+        const all_brands = await Brand.find().skip(toSkip).limit(10);
+        if(all_brands.length <= 0){
+            return res.status(404).json({message: "No brands", status: "warning"});
+        }
+        let pagination = [];
+        for(let i=1; i<= Math.ceil(all_brands.length/10); i++){
+            pagination.push(i);
+        }
+        return res.status(200).json({message: "Brands available", status: "success", all_brands, pagination});
+    } catch (error) {
+        
+    }
+})
 router.get('/', async (req, res) => {
     const all_brands = await Brand.find();
     if(all_brands){
@@ -27,16 +50,23 @@ router.get('/:id', async (req, res) => {
 })
 
 //add new brand
-router.post('/',checkBrand, async (req, res) => {
+router.post('/', upload.single("banner"),  async (req, res, next) => {
     try{
-        const newbrand = new Brand(req.body);
+        const url = req.protocol + '://' + req.get('host');
+        // console.log(req.body.name);
+        // console.log(req.file.filename);
+
+        const newbrand = new Brand({
+            name: req.body.name,
+            banner: url+ '/'+req.file.filename
+        });
         const save_brand = await newbrand.save()
         
         if(save_brand){
             res.json({"message": "Brand Succesfully Added", status: "success"})
         }
-    }catch{
-        res.json({"message": "Brands not Added", status: "error"})
+    }catch(e){
+        res.json({"message": e.message, status: "error"})
     }
     
 })
@@ -86,14 +116,8 @@ router.patch('/update/:id', async (req, res) => {
 async function checkBrand(req, res, next) {
     const {name, storeId, banner } = req.body;
     if(name === "" ||
-    storeId === "" ||
-    banner === "" ||
     name === null ||
-    storeId === null ||
-    banner === null ||
-    name === undefined ||
-    storeId === undefined ||
-    banner === undefined){
+    name === undefined){
         return res
         .status(400)
         .json({ message: "Please fill all fields", status: "warning" });    

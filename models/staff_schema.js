@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const StaffSchema = new mongoose.Schema({
-    full_name: {
+    name: {
         type: String,
         required: true
     },
@@ -9,7 +9,7 @@ const StaffSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    username: {
+    mobile_no: {
         type: String,
         required: true
     },
@@ -17,34 +17,10 @@ const StaffSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    dp: {
-        type: String,
-        required: true
-    },
     role: {
         type: String,
-        required: true    
-    },
-    address: {
-        type: Array,
-        required: true,
-        city: {
-            type: String,
-            required: true
-        },
-        state: {
-            type: String,
-            required: true
-        },
-        pin_code: {
-            type: Number,
-            required: true
-        },
-        country: {
-            type: String,
-            required: true
-        }
-    },
+        required: true 
+    }
     
 })
 

@@ -2,6 +2,98 @@ const { get } = require("mongoose");
 const Products = require("../models/products_schema");
 const router = require("express").Router();
 
+
+//get all products with store and brand details (filter: status)
+router.get('/full/page/:status/:page_no', async (req, res) => {
+    try{
+        const {status, page_no} = req.params;
+        let PageNo = Number(page_no);
+        if(PageNo <= 0) {
+            return res.status(404).json({message: "Invalid page no.", status: "warning"})
+        }
+
+        let toSkip = (PageNo-1)*10;
+        const allProducts = await Products.find({status}).populate([
+            {
+                path: "store"
+            },
+            {
+                path: "brand"
+            }
+        ]).skip(toSkip).limit(10);
+
+
+        
+        if(allProducts.length <= 0){
+            res.status(200).json({message: "NO Products found", status: "warning"});
+        }
+        let all_pages = [];
+        for (let i = 1; i <= Math.ceil(allProducts.length / 10); i++) {
+            all_pages.push(i);
+        }
+        res.status(200).json({message: "Products found", status: "success",  data: allProducts, pagination: all_pages});
+    }catch(e){
+        res.status(500).json({message: e.message, status: "error"})
+    }
+});
+
+
+//get all products with store and brand details
+router.get('/full/page/:page_no', async (req, res) => {
+    try{
+        const {page_no} = req.params;
+        let PageNo = Number(page_no);
+        if(PageNo <= 0) {
+            return res.status(400).json({message: "Invalid page no.", status: "warning"})
+        }
+
+        let toSkip = (PageNo-1)*10;
+        const allProducts = await Products.find({}).populate([
+            {
+                path: "store"
+            },
+            {
+                path: "brand"
+            }
+        ]).skip(toSkip).limit(10);
+
+
+        
+        if(allProducts.length <= 0){
+            res.status(200).json({message: "NO Products found", status: "warning"});
+        }
+        let all_pages = [];
+        for (let i = 1; i <= Math.ceil(allProducts.length / 10); i++) {
+            all_pages.push(i);
+        }
+        res.status(200).json({message: "Products found", status: "success",  data: allProducts, pagination: all_pages});
+    }catch(e){
+        res.status(400).json({message: e.message, status: "error"})
+    }
+});
+
+//get all products with store and brand details
+router.get('/full', async (req, res) => {
+    try{
+        const allProducts = await Products.find({}).populate([
+            {
+                path: "store"
+            },
+            {
+                path: "brand"
+            }
+        ]);
+        if(allProducts.length <= 0){
+            res.status(200).json({message: "NO Products found", status: "warning"});
+        }
+        res.status(200).json({message: "Products found", status: "success",  data: allProducts});
+    }catch(e){
+        res.status(400).json({message: e.message, status: "error"})
+    }
+});
+
+
+
 // get all products 
 router.get('/', async (req, res) => {
     try{
