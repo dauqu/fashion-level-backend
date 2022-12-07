@@ -5,6 +5,75 @@ const { aggregate } = require('../models/order_schema');
 const Order = require("../models/order_schema");
 
 
+//get total orders with page no
+router.get('/order-overview/page/:page_no', async (req, res) => {
+    try{
+        const {page_no} = req.body;
+        let PageNo = Number(page_no);
+        if(PageNo <= 0 ){
+            return res.status(205).json({
+                message: "Invalid page no",
+                status: "Error"
+            })
+        }
+        const totalOrders = await Order.find({});
+        let pagination = [];
+        for(let i=1; i<=Math.ceil(totalOrders.length); i++){
+            pagination.push(i);
+        }
+        return res.status(200).json({message: "Orders found", status: "success", orders: totalOrders, pagination});
+    }
+    catch(e){
+        res.status(400).json({message: e.message, status: "error"})
+    }
+})
+
+//get total orders with total value
+router.get('/order-overview/', async (req, res) => {
+    try{
+        const totalOrders = await Order.find({});
+        let total_orders = totalOrders.length;
+        let total_price = 0;
+        totalOrders.forEach((order) => {
+            total_price += order.amount;
+        })
+        return res.status(200).json({message: "Orders found", status: "success", total_orders, orders_price: total_price});
+    }
+    catch(e){
+        res.status("400").json({message: e.message, status: "error"})
+    }
+})
+
+
+// get all orders with user details
+router.get('/full/page/:page_no', async (req, res) => {
+    try {
+        const {page_no} = req.params;
+        let PageNo = Number(page_no);
+        if(PageNo <= 0) {
+            return res.status(400).json({message: "Invalid page no.", status: "warning"})
+        }
+
+        let toSkip = (PageNo-1)*10;
+        const allOrders = await Order.find({}).populate([
+            { 
+                path: "user",
+                select: "-otp -password"
+            }
+        ]).skip(toSkip).limit(10);
+
+        if(allOrders.length <= 0){
+            res.status(200).json({message: "No Orders found", status: "warning"});
+        }
+        let all_pages = [];
+        for (let i = 1; i <= Math.ceil(allOrders.length / 10); i++) {
+            all_pages.push(i);
+        }
+        res.status(200).json({messsage: "Get Success", status: "success", allOrders, pagination: all_pages});
+    } catch (error) {
+        res.status(500).json({messsage: error.message, status: "error"});
+    }
+})
 
 // get all orders filter(status)
 router.get('/full/status/:status', async (req, res) => {
@@ -37,7 +106,8 @@ router.get('/full', async (req, res) => {
         
         const ans = await Order.find({}).populate([
             { 
-                path: "user"
+                path: "user",
+                select: "-otp -password"
             },
             {
                 path: "products",

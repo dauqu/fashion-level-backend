@@ -105,6 +105,7 @@ app.use(`${apiv1}/wallet`, require("./routes/wallet"));
 app.use(`${apiv1}/dashboard`, require("./routes/dashboard"));
 app.use(`${apiv1}/users`, require("./routes/users"));
 app.use(`${apiv1}/wallet-transaction`, require("./routes/WalletTransactions"));
+app.use(`${apiv1}/payments`, require("./routes/payment"));
 
 // app.use(`${apiv1}/users`, require("./routes/users"));
 // app.use(`${apiv1}/vehicles`, require("./routes/vehicles"));
