@@ -50,7 +50,7 @@ router.get('/:id', async (req, res) => {
 })
 
 //add new brand
-router.post('/', upload.single("banner"),  async (req, res, next) => {
+router.post('/', upload.single("banner"),  async (req, res) => {
     try{
         const url = req.protocol + '://' + req.get('host');
         // console.log(req.body.name);

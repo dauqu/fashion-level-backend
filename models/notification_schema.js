@@ -10,11 +10,15 @@ const NotificationsSchema = new mongoose.Schema({
         image: {
             type: String,
         },
-        link: {
-            type: String,
-        },
         send_time: {
             type: String,
+            required: false,
+            default: Date.now()
+        },
+        user: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "User",
+            required: true
         }
 }, {
     timestamps: true

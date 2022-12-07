@@ -18,7 +18,7 @@ router.get('/page/:page_no', async (req, res) => {
 
         // calculating pagination array 
         let pagination = [];
-        for (let i = 1; i <= Math.ceil(payments.length); i++) {
+        for (let i = 1; i <= Math.ceil(payments.length/10); i++) {
             pagination.push(i);
         }
         return res.status(200).json({ message: "Payment details fetched", status: "success", payments, pagination })

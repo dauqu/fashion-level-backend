@@ -1,6 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const Notification = require("../models/notification_schema");
+const upload = require('../config/fileuploader');
+const mongoose = require('mongoose');
+const User = require('../models/user_schema');
+
+//Get all notifications by page no
+router.get('/page/:page_no', async (req, res) => {
+    try {
+
+        // check valid pages
+        let page_no = req.params.page_no;
+        page_no = Number(page_no);
+        if(!page_no || page_no <= 0){
+            return res.status(205).send({message: "Invalid page no", status: "warning"});
+        }
+        // get data with skip and limit 
+        let toSkip = (page_no-1)*10;
+        const notifications = await Notification.find().skip(toSkip).limit(10);
+
+        //pagination
+        let pagination = [];
+        for(let i=1; i<= Math.ceil(notifications.length/10); i++){
+            pagination.push(i);
+        }
+        return res.status(200).send({message:"Notification fetched", status: "success", notifications, pagination});
+    } catch (error) {
+        res.status(500).json({ message: error.message, status: "error" });
+    }
+});
 
 //Get all notifications
 router.get('/', async (req, res) => {
@@ -27,19 +55,19 @@ router.get('/:id', async (req, res) => {
 
 
 //Create notification
-router.post('/', async (req, res) => {
-
-    const notification = new Notification({
-        title: req.body.title,
-        description: req.body.description,
-        image: req.body.image,
-        link: req.body.link,
-        send_time: req.body.send_time,
-    });
-
+router.post('/', upload.single("image"), async (req, res) => {
     try {
+        const {user, title, description} = req.body;
+       
+        const url = req.protocol + '://' + req.get('host');
+        const notification = new Notification({
+            title: title,
+            description: description,
+            image: url+ '/'+req.file.filename,
+            user: user
+        });
         const newNotification = await notification.save();
-        res.status(201).json({ message: "Notification created", status: "success", notification: newNotification });
+        res.status(200).json({ message: "Notification created", status: "success", notification: newNotification });
     } catch (error) {
         res.status(400).json({ message: error.message, status: "error" });
     }

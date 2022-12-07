@@ -24,12 +24,9 @@ router.post("/", async (req, res) => {
 
 // test
 router.get("/logout", async (req, res) => {
-    try {
         res.clearCookie("auth_token");
-        return res.status(200).json({message: "User has Logged out.", status: "success"})
-    } catch (error) {
-        return res.status(500).json({message: error.message, status: "error"})
-    }
+        res.end();
+        // res.status(200).json({message: "User has Logged out.", status: "success"})
 })
 
 // admin login 
@@ -63,12 +60,13 @@ router.post("/login", async (req, res) => {
     //Set cookie
     res.cookie("auth_token", token, {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
-        secure: false,
-    }); //1 days
-
+        maxAge: 1000 * 60 * 60 * 24 * 300,
+        secure: true,
+        sameSite: "none",
+    }); 
+    
     res.setHeader("x-auth-token", token);
-
+    res.cookie("auth_token", token); 
     res.status(200)
         .json({ message: "Login Successful", status: "success", token: token });
 
