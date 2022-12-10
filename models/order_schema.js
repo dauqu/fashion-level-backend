@@ -1,37 +1,71 @@
 const mongoose = require('mongoose')
 
 const OrderSchema = new mongoose.Schema({
-    requested_date: {
-        type: "String",
-        required: true
-    },
-    amount: {
+    orderId: {
+        type: String,
+        unique: true,
+        uppercase: true,
+        required: true,
+      },
+      amount: {
         type: Number,
-        required: true     
-    },
-    products: [
-        {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: "Products"
-        }
-    ],
-    user: {
+        required: true,
+        default: 0,
+      },
+      pickup_slot:{
+        type: String,
+      },
+      order_by: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "User"
-    },
-    pickup_slot: {
+        required: true,
+        ref: "User",
+      },
+      payment_status: {
         type: String,
-        required: false
-    },
-    status: {
+        required: true,
+        default: "pending"
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      currency: {
         type: String,
-        required: true
-    },
-    payment_status: {
+        uppercase: true,
+        default: "INR",
+      },
+      status: {
         type: String,
-         required: true,
-         default: "unpaid"
-    }
+        default: "pending"
+      },
+      payment_method: {
+        type: String,
+      },
+    
+      products: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Products",
+            required: true
+        }],
+
+      address_line_1: {
+        type: String,
+      },
+      address_line_2: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      zip_code: {
+        type: String,
+      },
+      country: {
+        type: String,
+      },
 },{
     timestamps: true
 })

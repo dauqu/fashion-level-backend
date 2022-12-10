@@ -55,7 +55,7 @@ router.get("/most-ordered/:page_no", async (req, res) => {
         }
         const toSkip = (page_no - 1)*10;
         const total_products = await Products.find({});
-        const most_ordered = await Products.find({}).sort({total_orders: -1}).skip(toSkip).limit(10);
+        const most_ordered = await Products.find({}).sort({sold_item: -1}).skip(toSkip).limit(10);
         
         if(total_products.length <= 0){
             return res.status(404).json({message: "No Products found", status: "warning" });
@@ -131,7 +131,7 @@ router.get('/most-selling/:page_no', async (req, res) => {
         
         const toSkip = (page_no - 1)*10;
         const total_products = await Products.find({});
-        const most_selling = await Products.find().sort({quantity_sold: -1}).limit(10).skip(toSkip);
+        const most_selling = await Products.find().sort({sold_item: -1}).limit(10).skip(toSkip);
 
         if(total_products.length <= 0){
             return res.status(404).json({message: "No Products", status: "warning" });

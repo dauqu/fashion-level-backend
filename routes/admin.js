@@ -65,8 +65,7 @@ router.post("/login", async (req, res) => {
         sameSite: "none",
     }); 
     
-    res.setHeader("x-auth-token", token);
-    res.cookie("auth_token", token); 
+    res.setHeader("x-auth-token", token); 
     res.status(200)
         .json({ message: "Login Successful", status: "success", token: token });
 

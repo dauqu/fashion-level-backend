@@ -1,128 +1,123 @@
 const mongoose = require("mongoose");
 
+
+const allreviews = new mongoose.Schema({
+    comments: String,
+    rating: Number,
+});
+  
+//gallery
+const gallery = new mongoose.Schema({
+    image: Array,   
+});
+
 const ProductsSchema = new mongoose.Schema({
-    name: {
-        type: Object,
-        required: true,
-        product_name: {
-            type: String,
-            required: true,
-        },
-        category: {
-            type: String,
-            required: true,
-        },
-        unit: {
-            type: String,
-            required: true,
-        },
-        minimum_purchase_quantity: {
-            type: Number,
-            required: true,
-        },
-        barcode: {
-            type: String,
-            required: true,
-        },
+    title: {
+        type: String,
+        required: true
+    },
+    slug: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Category"
     },
     brand: {
-        type:mongoose.SchemaTypes.ObjectId,
-        ref: "Brand"
-    },
-    product_price_stock: {
-        type: Object,
-        required: true,
-        unit_price: {
-            type: Number,
-            required: true,
-        },
-        quantity: {
-            type: Number,
-            required: true,
-        },
-        discount: {
-            type: Number,
-            required: true,
-        },
-        discount_data_range: {
-            type: Object,
-            required: true,
-            start_date: {
-                type: String,
-                required: true,
-            },
-            end_date: {
-                type: String,
-                required: true,
-            },
-        },
-        sku: {
-            type: String,
-            required: true,
-        },
-    },
-    product_images: {
-        type: Object,
-        required: true,
-        image: {
-            type: String,
-            required: true,
-        },
-        image_alt: {
-            type: String,
-            required: true,
-        },
-    },
-    product_description: {
-        type: Object,
-        required: true,
-        description: {
-            type: String,
-            required: true,
-        },
-        description_alt: {
-            type: String,
-            required: true,
-        },
-    },
-    slect_your_size_chart: {
-        type: Object,
-        required: true,
-        size: {
-            type: String,
-            required: true,
-        },
-        size_chart: {
-            type: String,
-            required: true,
-        },
-    },
-    settings: {
-        type: Object,
-        required: true,
-        product_status: {
-            type: String,
-            required: true,
-        },
-        product_visibility: {
-            type: String,
-            required: true,
-        },
-    },
-    total_orders: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    quantity_sold: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    store: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "Store"
+        ref: "Brand",
+        required: true
+    },
+    sku: {
+        type: String,
+        unique: true,
+        required: true,
+        lowercase: true
+    },
+    sold_item: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    variable: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true,
+        default: "draft"
+    },
+    featured_image: {
+        type: String,
+        required: true,
+    },
+    gallery: [{
+        type: String,
+        required: false,
+    }],
+    sale_price: {
+        type: Number,
+        required: true,
+    },
+    regular_price: {
+        type: Number,
+        required: true
+    },
+    stock_status: {
+        type: String,
+        required: true,
+    },
+    enable_reviews: {
+        type: Boolean
+    },
+    avarage_reviews: {
+        type: Number
+    },
+    all_reviews: allreviews,
+
+    enable_comments: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+    currency: {
+        type: String,
+        required: true,
+        default: "USD"
+    },
+    additional_information: {
+        type: String,
+        required: false,
+    },
+    isprivate: {
+        type: Boolean,
+        required: false,
+    },
+    tax_status: {
+        type: String,
+        required: false,
+    },
+    tax_class: {
+        type: String,
+        required: false,
+    },
+    publisher: {
+        type: String,
+        required: true,
+    },
+    store:{
+        type: mongoose.SchemaTypes.ObjectId,
+        required: true,
+        ref: "Store",
     }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model("Products", ProductsSchema);

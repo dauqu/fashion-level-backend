@@ -1,7 +1,6 @@
-const { get } = require("mongoose");
 const Products = require("../models/products_schema");
 const router = require("express").Router();
-
+const slugify = require("slugify"); 
 
 //get all products with store and brand details (filter: status)
 router.get('/full/page/:status/:page_no', async (req, res) => {
@@ -54,6 +53,8 @@ router.get('/full/page/:page_no', async (req, res) => {
             },
             {
                 path: "brand"
+            },{
+                path: "category"
             }
         ]).skip(toSkip).limit(10);
 
@@ -81,6 +82,9 @@ router.get('/full', async (req, res) => {
             },
             {
                 path: "brand"
+            },
+            {
+                path: "category"
             }
         ]);
         if(allProducts.length <= 0){
@@ -123,10 +127,22 @@ router.get("/:id", async (req, res) => {
 // add new product 
 router.post('/', async (req, res) => {
     try {
+        const {title, description, category, variable, featured_image,
+            sale_price, regular_price, stock_status, publisher 
+        } = req.body;
+
+        // generate 6 no random number
+        const random = Math.floor(100000 + Math.random() * 900000);
+
+        let sluged = slugify(title, {lower: true, strict: true});
+
         const newproduct = new Products(req.body);
+        newproduct.slug = sluged;
+        newproduct.sku = String(random);
+
         await newproduct.save();
         return res.status(200).json({message: "Product added successfully", status: "success"})
-    } catch (error) {
+    } catch (e) {
         return res.status(400).json({message: e.message, status: "error"})
     }
 })

@@ -21,7 +21,7 @@ router.get('/page/:page_no', async (req, res) => {
         for (let i = 1; i <= Math.ceil(allStaffs.length / 10); i++) {
             all_pages.push(i);
         }
-        return res.status(200).json({ message: "Staff found", status: "success", data: allStaffs, pagination: all_pages });
+        return res.status(200).json({ message: "Staff found", status: "success", allStaffs, pagination: all_pages });
     } catch (e) {
         res.status(500).json({ message: e.message, status: "error" })
     }

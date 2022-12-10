@@ -1,9 +1,8 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
 
-const { Aggregate } = require('mongoose');
-const { aggregate } = require('../models/order_schema');
 const Order = require("../models/order_schema");
-
+const Product = require("../models/products_schema");
 
 //get total orders with page no
 router.get('/order-overview/page/:page_no', async (req, res) => {
@@ -57,8 +56,8 @@ router.get('/full/page/:page_no', async (req, res) => {
         let toSkip = (PageNo-1)*10;
         const allOrders = await Order.find({}).populate([
             { 
-                path: "user",
-                select: "-otp -password"
+                path: "order_by",
+                select: "_id first_name last_name email dp phone_no username language country"
             }
         ]).skip(toSkip).limit(10);
 
@@ -82,8 +81,8 @@ router.get('/full/status/:status', async (req, res) => {
 
         const ans = await Order.find({status}).populate([
             { 
-                path: "user",
-                select: "-otp -password"
+                path: "order_by",
+                select: "_id first_name last_name email dp phone_no username language country"
             },
             {
                 path: "products",
@@ -182,7 +181,8 @@ router.get('/status/:status/:page', async (req, res) => {
         const all_orders = await Order.find({ status })
         .populate([
             { 
-                path: "user"
+                path: "order_by",
+                select: "_id first_name last_name email dp phone_no username language country"
             },
             {
                 path: "products",
@@ -211,12 +211,47 @@ router.get('/status/:status/:page', async (req, res) => {
 //add new order
 router.post('/', async (req, res) => {
     try {
-        const new_order = new Order(req.body);
-        const save_order = await new_order.save()
+        const { order_by, products } = req.body;
 
-        if (save_order) {
-            res.json({ "message": "Order Succesfully Added", status: "success" })
-        }
+        // random 6 digit number
+        const orderId = Math.floor(100000 + Math.random() * 900000);
+        
+
+        let o_products = products.map(s => mongoose.Types.ObjectId(s));
+        Product.aggregate([
+            {
+                $match: {
+                    _id: { $in: o_products }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$sale_price" }
+                }
+            }
+        ])
+        .then(async (data) => {
+            // res.send(data);
+            const new_order = new Order({
+                orderId,
+                order_by,
+                products,
+                amount: data[0].total
+            });
+    
+            const save_order = await new_order.save()
+    
+            if (save_order) {
+                res.json({ "message": "Order Succesfully Added", status: "success", savedOrder: save_order })
+            }
+        })
+
+        
+
+        
+
+
     } catch (e) {
         res.json({ "message": e.message, status: "error" })
     }

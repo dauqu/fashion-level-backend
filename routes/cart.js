@@ -30,8 +30,8 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try{
         // check if same item is already added in user cart 
-        const {userId, productId} = req.body;
-        const check_cart = await Cart.find({userId, productId});
+        
+        const check_cart = await Cart.find(req.body);
         if(check_cart.length > 0){
             return res.status(403).json({"message": "Item is alredy added in the cart", status: "warning"})
         } 

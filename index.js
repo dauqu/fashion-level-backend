@@ -106,6 +106,9 @@ app.use(`${apiv1}/dashboard`, require("./routes/dashboard"));
 app.use(`${apiv1}/users`, require("./routes/users"));
 app.use(`${apiv1}/wallet-transaction`, require("./routes/WalletTransactions"));
 app.use(`${apiv1}/payments`, require("./routes/payment"));
+app.use(`${apiv1}/banners`, require("./routes/banner"));
+app.use(`${apiv1}/roles`, require("./routes/roles"));
+app.use(`${apiv1}/coupon`, require("./routes/coupon"));
 
 // app.use(`${apiv1}/users`, require("./routes/users"));
 // app.use(`${apiv1}/vehicles`, require("./routes/vehicles"));
