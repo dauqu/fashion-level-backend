@@ -4,6 +4,64 @@ const mongoose = require('mongoose');
 const Order = require("../models/order_schema");
 const Product = require("../models/products_schema");
 
+
+
+// get total orders by status and page no
+router.get('/page/:status/:page_no', async (req, res) => {
+    try{
+        const {status, page_no} = req.params;
+        let PageNo = Number(page_no);
+        if(PageNo <= 0 ){
+            return res.status(205).json({
+                message: "Invalid page no",
+                status: "error"
+            })
+        }
+
+        const all = await Order.find({status});
+        const allOrders = await Order.find({ status }).populate([
+            { 
+                path: "order_by",
+                select: "_id first_name last_name" 
+            }
+        ]).skip((PageNo-1)*10).limit(10);
+        
+        let pagination = [];
+        for(let i=1; i<=Math.ceil(all.length/10); i++){
+            pagination.push(i);
+        }
+        return res.status(200).json({message: "Orders found", status: "success", orders: allOrders, pagination});
+    }
+    catch(e){
+        res.status(400).json({message: e.message, status: "error"})
+    }
+});
+
+
+// get all orders count by status
+router.get('/count', async (req, res) => {
+    try{
+        const allOrders = await Order.find({});
+        const pending = allOrders.filter((order) => order.status == "pending").length;
+        const shipped = allOrders.filter((order) => order.status == "shipped").length;
+        const delivered = allOrders.filter((order) => order.status == "delivered").length;
+        const cancelled = allOrders.filter((order) => order.status == "cancelled").length;
+        const returned = allOrders.filter((order) => order.status == "return").length;
+
+        return res.status(200).json({message: "Orders count",
+        status: "success",
+        data: {
+            pending,
+            shipped,
+            delivered,
+            cancelled,
+            return: returned
+        }})
+    }catch(e){
+        res.status(400).json({message: e.message, status: "error"})
+    }
+})
+
 //get total orders with page no
 router.get('/order-overview/page/:page_no', async (req, res) => {
     try{
@@ -54,6 +112,7 @@ router.get('/full/page/:page_no', async (req, res) => {
         }
 
         let toSkip = (PageNo-1)*10;
+        const all = await Order.find({});
         const allOrders = await Order.find({}).populate([
             { 
                 path: "order_by",
@@ -61,11 +120,8 @@ router.get('/full/page/:page_no', async (req, res) => {
             }
         ]).skip(toSkip).limit(10);
 
-        if(allOrders.length <= 0){
-            res.status(200).json({message: "No Orders found", status: "warning"});
-        }
         let all_pages = [];
-        for (let i = 1; i <= Math.ceil(allOrders.length / 10); i++) {
+        for (let i = 1; i <= Math.ceil(all.length / 10); i++) {
             all_pages.push(i);
         }
         res.status(200).json({messsage: "Get Success", status: "success", allOrders, pagination: all_pages});
@@ -93,6 +149,7 @@ router.get('/full/status/:status', async (req, res) => {
                 ]
             }
         ]);
+
         res.status(200).json({messsage: "Get Success", status: "success", data: ans});
     } catch (error) {
         res.status(500).json({messsage: error.message, status: "error"});
@@ -211,7 +268,7 @@ router.get('/status/:status/:page', async (req, res) => {
 //add new order
 router.post('/', async (req, res) => {
     try {
-        const { order_by, products } = req.body;
+        const {  products } = req.body;
 
         // random 6 digit number
         const orderId = Math.floor(100000 + Math.random() * 900000);
@@ -233,12 +290,11 @@ router.post('/', async (req, res) => {
         ])
         .then(async (data) => {
             // res.send(data);
-            const new_order = new Order({
-                orderId,
-                order_by,
-                products,
-                amount: data[0].total
-            });
+            const new_order = new Order(req.body);
+
+            new_order.orderId = orderId;
+            new_order.amount = data[0].total;
+
     
             const save_order = await new_order.save()
     

@@ -131,7 +131,22 @@ router.get('/most-selling/:page_no', async (req, res) => {
         
         const toSkip = (page_no - 1)*10;
         const total_products = await Products.find({});
-        const most_selling = await Products.find().sort({sold_item: -1}).limit(10).skip(toSkip);
+        const most_selling = await Products.find()
+        .populate([
+            {
+                path: "brand",
+                select: "banner name createdAt"
+            },
+            {
+                path: "category",
+                select: "name image published slug createdAt"
+            },
+            {
+                path: "store",
+                select: "-__v -updatedAt"
+            }
+        ])
+        .sort({sold_item: -1}).limit(10).skip(toSkip);
 
         if(total_products.length <= 0){
             return res.status(404).json({message: "No Products", status: "warning" });
@@ -161,7 +176,7 @@ router.get('/', async (req, res) => {
     const processing_orders = total_orders.filter((item) => item.status === "pending");
     const ready_orders = total_orders.filter((item) => item.status === "ready");
     const shipped_orders = total_orders.filter((item) => item.status === "shipped");
-    const returned_orders = total_orders.filter((item) => item.status === "shipped");
+    const returned_orders = total_orders.filter((item) => item.status === "return");
 
     const all_promo = await Promo.find({});
 

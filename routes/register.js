@@ -24,7 +24,7 @@ router.post("/", validateRegister, async (req, res) => {
   const save_user = new User({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
-    dp: "https://styles.redditmedia.com/t5_2c83sr/styles/profileIcon_4dwzf4syg0w51.png",
+    dp: req?.body?.dp || "https://styles.redditmedia.com/t5_2c83sr/styles/profileIcon_4dwzf4syg0w51.png",
     phone_no: req.body.phone_no,
     phone_verified: false,
     email: req.body.email,

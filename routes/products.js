@@ -2,7 +2,41 @@ const Products = require("../models/products_schema");
 const router = require("express").Router();
 const slugify = require("slugify"); 
 
-//get all products with store and brand details (filter: status)
+
+// get all status products length 
+router.get('/count', async (req, res) => {
+    try{
+        const allProducts = await Products.find({});
+        const allProductsLength = allProducts.length;
+        const approved = allProducts.filter(product => product?.status === "approved").length;
+        const pending = allProducts.filter(product => product?.status === "pending").length;
+        const published = allProducts.filter(product => product?.status === "published").length;
+        const unpublished = allProducts.filter(product => product?.status === "unpublished").length;
+        const outofstock = allProducts.filter(product => product?.status === "outofstock").length;
+        const rejected = allProducts.filter(product => product?.status === "rejected").length;
+        
+        res.json({
+            message: "Products found",
+            status: "success",
+            data: {
+                allProductsLength,
+                approved,
+                pending,
+                published,
+                unpublished,
+                outofstock,
+                rejected
+            }
+        })
+    }catch(e){
+        res.status(500).json({message: e.message, status: "error"})
+    }
+})
+
+
+
+
+//get all products with store and brand details by page no (filter: status)
 router.get('/full/page/:status/:page_no', async (req, res) => {
     try{
         const {status, page_no} = req.params;
@@ -12,25 +46,25 @@ router.get('/full/page/:status/:page_no', async (req, res) => {
         }
 
         let toSkip = (PageNo-1)*10;
-        const allProducts = await Products.find({status}).populate([
+        const products = await Products.find({status}).populate([
             {
                 path: "store"
             },
             {
                 path: "brand"
+            }, {
+                path: "category"
             }
         ]).skip(toSkip).limit(10);
 
+        const allProducts = await Products.find({status});
 
-        
-        if(allProducts.length <= 0){
-            res.status(200).json({message: "NO Products found", status: "warning"});
-        }
         let all_pages = [];
         for (let i = 1; i <= Math.ceil(allProducts.length / 10); i++) {
             all_pages.push(i);
         }
-        res.status(200).json({message: "Products found", status: "success",  data: allProducts, pagination: all_pages});
+        
+        res.status(200).json({message: "Products found", status: "success",  data: products, pagination: all_pages, total_products: allProducts.length});
     }catch(e){
         res.status(500).json({message: e.message, status: "error"})
     }
@@ -43,10 +77,11 @@ router.get('/full/page/:page_no', async (req, res) => {
         const {page_no} = req.params;
         let PageNo = Number(page_no);
         if(PageNo <= 0) {
-            return res.status(400).json({message: "Invalid page no.", status: "warning"})
+            return res.status(200).json({message: "Invalid page no.", status: "warning"})
         }
 
         let toSkip = (PageNo-1)*10;
+        let all = await Products.find({});
         const allProducts = await Products.find({}).populate([
             {
                 path: "store"
@@ -59,15 +94,15 @@ router.get('/full/page/:page_no', async (req, res) => {
         ]).skip(toSkip).limit(10);
 
 
-        
-        if(allProducts.length <= 0){
-            res.status(200).json({message: "NO Products found", status: "warning"});
-        }
         let all_pages = [];
-        for (let i = 1; i <= Math.ceil(allProducts.length / 10); i++) {
+        for (let i = 1; i <= Math.ceil(all.length / 10); i++) {
             all_pages.push(i);
         }
-        res.status(200).json({message: "Products found", status: "success",  data: allProducts, pagination: all_pages});
+        
+        if(allProducts.length <= 0){
+            return res.status(200).json({message: "NO Products found", status: "warning", data: [], pagination: all_pages, total_products: all.length});
+        }
+        res.status(200).json({message: "Products found", status: "success",  data: allProducts, pagination: all_pages, total_products: all.length});
     }catch(e){
         res.status(400).json({message: e.message, status: "error"})
     }

@@ -1,6 +1,30 @@
 const Store = require("../models/store_schema")
 const router = require("express").Router();
 
+
+//count all store by status
+router.get("/count", async (req, res) => {
+    try{
+        const all = await Store.find({});
+        const active = all.filter((store) => store.status === "active");
+        const pending = all.filter((store) => store.status === "pending");
+        const blocked = all.filter((store) => store.status === "blocked");
+        const rejected = all.filter((store) => store.status === "rejected");
+
+        return res.status(200).json({message: "Stores found", status: "success",  data: {
+            all: all.length,
+            active: active.length,
+            pending: pending.length,
+            blocked: blocked.length,
+            rejected: rejected.length
+        }});
+    }catch(e){
+        res.status(500).json({message: e.message, status: "error"})
+    }
+})
+
+
+
 // get stores by page no (filter: status)
 router.get("/page/:status/:page_no", async (req, res) => {
     try{
@@ -11,15 +35,16 @@ router.get("/page/:status/:page_no", async (req, res) => {
         }
 
         let toSkip = (PageNo-1)*10;
+        const all = await Store.find({status});
         const allStore = await Store.find({status}).skip(toSkip).limit(10);
         
-        if(allStore.length <= 0){
-            return res.status(404).json({message: "NO stores found", status: "warning"});
+        let all_pages = [];
+        for (let i = 1; i <= Math.ceil(all.length / 10); i++) {
+            all_pages.push(i);
         }
 
-        let all_pages = [];
-        for (let i = 1; i <= Math.ceil(allStore.length / 10); i++) {
-            all_pages.push(i);
+        if(allStore.length <= 0){
+            return res.status(202).json({message: "NO stores found", status: "warning", data: [], pagination: all_pages});
         }
         return res.status(200).json({message: "Stores found", status: "success",  data: allStore, pagination: all_pages});
     }catch(e){
@@ -73,7 +98,7 @@ router.patch("/:id", async (req, res) => {
             return res.status(404).json({message: "store not found", status: "warning"})
         }
         await Store.findByIdAndUpdate(id, req.body, {new: false});
-        return res.status(500).json({message: "store updated", status: "success"})
+        return res.status(200).json({message: "store updated", status: "success"})
     } catch (e) {
         return res.status(500).json({message: e.message, status: "error"})
     }

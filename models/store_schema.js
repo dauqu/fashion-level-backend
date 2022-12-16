@@ -5,21 +5,33 @@ const StoreSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    first_name: {
+        type: String,
+        required: false,
+    },
+    last_name: {
+        type: String,
+        required: false,
+    },
     business_address: {
         type: String,
         required: true,
     },
-    first_name: {
-        type: String,
-        required: true,
-    },
     type_of_business: {
-        type: Array,
+        type: String,
         required: true,
     },
     contact_number: {
         type: String,
         required: true,
+    },
+    email: {
+        type: String,
+        required: false,
+    },
+    city: {
+        type: String,
+        required: false,
     },
     country: {
         type: String,
@@ -42,6 +54,8 @@ const StoreSchema = new mongoose.Schema({
         type: String,
         required: false
     }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model("Store", StoreSchema);

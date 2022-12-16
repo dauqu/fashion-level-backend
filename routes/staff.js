@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Staff = require('../models/staff_schema')
 const bcrypt = require('bcryptjs')
+const Order = require('../models/order_schema')
 
 //Get all staff by page no
 router.get('/page/:page_no', async (req, res) => {
@@ -11,15 +12,25 @@ router.get('/page/:page_no', async (req, res) => {
             return res.status(404).json({ message: "Invalid page no.", status: "warning" })
         }
 
+        const all = await Staff.find({});
+
         let toSkip = (PageNo - 1) * 10;
-        const allStaffs = await Staff.find({ }).skip(toSkip).limit(10);
+        const allStaffs = await Staff.find({ })
+        .populate([
+            {
+                path: "role",
+                select: "_id role"
+            }
+        ])
+        .skip(toSkip).limit(10);
+
+        let all_pages = [];
+        for (let i = 1; i <= Math.ceil(all.length / 10); i++) {
+            all_pages.push(i);
+        }
 
         if (allStaffs.length <= 0) {
-            return res.status(200).json({ message: "No staff found", status: "warning" });
-        }
-        let all_pages = [];
-        for (let i = 1; i <= Math.ceil(allStaffs.length / 10); i++) {
-            all_pages.push(i);
+            return res.status(200).json({ message: "No staff found", status: "warning", allStaffs, pagination: all_pages});
         }
         return res.status(200).json({ message: "Staff found", status: "success", allStaffs, pagination: all_pages });
     } catch (e) {
@@ -43,11 +54,15 @@ router.get('/:id', async (req, res) => {
         const { id } = req.params;
         const staff = await Staff.findById(id);
         if (!staff) {
-            return res.status(404).json({ message: "Staff not found!", status: "error" });
+            return res.status(200).json({ message: "Staff not found!", status: "warning" });
         }
-        res.status(200).json({ message: "Staff found", status: "success", staff });
+        const findOrders = await Order.find({ order_by: id });
+        if(findOrders.length > 0){
+            return res.status(200).json({ message: "Cannot delete Staff. Pending orders for this staff.", status: "warning" });
+        }
+        return res.status(200).json({ message: "Staff found", status: "success", staff });
     } catch (error) {
-        res.status(500).json({ message: error.message, status: "error" });
+        return res.status(500).json({ message: error.message, status: "error" });
     }
 });
 

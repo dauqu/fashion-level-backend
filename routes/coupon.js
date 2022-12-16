@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const Coupon = require('../models/coupon_schema');
 const Cart = require('../models/cart_schema');
+const upload = require('../config/fileuploader');
 
 // get all coupon by page no 
 router.get('/page/:pageNo', async (req, res) => {
@@ -13,9 +14,15 @@ router.get('/page/:pageNo', async (req, res) => {
 
         const limit = 10;
         const skip = (pageNo - 1) * limit;
-
+        const allCoupons = await Coupon.find({});
         const coupons = await Coupon.find({}).skip(skip).limit(limit);
-        res.json({status: "success" , coupons});
+
+        let pagination = [];
+        for(let i = 1; i <= Math.ceil(allCoupons.length / limit); i++){
+            pagination.push(i);
+        }
+
+        res.json({status: "success", message: "Coupons Cound", coupons, pagination});
     } catch (err) {
         res.json({ message: err.message });
     }
@@ -54,15 +61,15 @@ router.get('/', async (req, res) => {
 
 
 // add coupon
-router.post('/', async (req, res) => {
+router.post('/', upload.single("image"), async (req, res) => {
     try {
+        const url = req.protocol + '://' + req.get('host');
+
         const coupon = new Coupon(req.body);
-        // generate 10 digit random number
-        const random = Math.floor(1000000000 + Math.random() * 9000000000);
-        coupon.code = random;
+        coupon.image = url + '/' +  req.file.filename;
 
         const savedCoupon = await coupon.save();
-        res.json({message: "Coupon saved success" ,status: "success" , savedCoupon});
+        res.status(200).json({message: "Coupon saved success" ,status: "success" , savedCoupon});
     } catch (err) {
         res.json({ message: err.message });
     }

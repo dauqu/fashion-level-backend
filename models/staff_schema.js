@@ -18,8 +18,9 @@ const StaffSchema = new mongoose.Schema({
         required: true
     },
     role: {
-        type: String,
-        required: true 
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: "Roles"
     }
     
 }, {

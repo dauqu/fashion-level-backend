@@ -53,6 +53,21 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// delete a notification by id 
+router.delete('/:id', async (req, res) => {
+    try {
+        const notification = await Notification.findById(req.params.id);
+        if (!notification) {
+            return res.status(404).json({ message: "Notification not found", status: "error" });
+        }
+        await notification.remove();
+        res.status(200).json({ message: "Notification deleted", status: "success" });
+    } catch (error) {
+        res.status(500).json({ message: error.message, status: "error" });
+    }
+});
+
+
 
 //Create notification
 router.post('/', upload.single("image"), async (req, res) => {
