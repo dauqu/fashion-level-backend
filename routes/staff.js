@@ -52,14 +52,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const staff = await Staff.findById(id);
+        const staff = await Staff.findById(id).populate([
+            {
+                path: "role",
+                select: "_id role for"
+            }
+        ]).select("-password");
         if (!staff) {
             return res.status(200).json({ message: "Staff not found!", status: "warning" });
         }
-        const findOrders = await Order.find({ order_by: id });
-        if(findOrders.length > 0){
-            return res.status(200).json({ message: "Cannot delete Staff. Pending orders for this staff.", status: "warning" });
-        }
+
+        
         return res.status(200).json({ message: "Staff found", status: "success", staff });
     } catch (error) {
         return res.status(500).json({ message: error.message, status: "error" });
@@ -92,11 +95,17 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const {name, email, mobile_no, role} = req.body;
         const find_staff = await Staff.findById(id);
         if (!find_staff) {
             return res.status(404).json({ message: "Staff not found", status: "error" })
         }
-        await Staff.findByIdAndUpdate(id, req.body);
+        await Staff.findByIdAndUpdate(id, {
+            name,
+            email,
+            mobile_no,
+            role
+        });
         return res.status(200).json({ message: "Staff details updated", status: "success" })
     } catch (error) {
         return res.status(500).json({ message: error.message, status: "error" })

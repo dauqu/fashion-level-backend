@@ -1,5 +1,5 @@
 const Roles= require("../models/roles_schema")
-
+const Staff = require("../models/staff_schema")
 const router = require("express").Router();
 
 //Get roles info by id
@@ -55,7 +55,7 @@ router.post("/:for_type", async (req, res) => {
 router.get("/for/:filter", async (req, res) => {
     try {
         const { filter } = req.params;
-        const all_roles = await Roles.find({for: filter});
+        const all_roles = await Roles.find({for: filter}).select("role _id for");
         res.status(200).json({all_roles, message: "Roles found", status: "success"}); 
     } catch (error) {
         res.status(500).json({ message: error.message, status: "error" });
@@ -109,10 +109,16 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const delete_role = await Roles.findByIdAndDelete(id);
+        const delete_role = await Roles.findById(id);
         if(!delete_role){
             return res.status(404).json({ message: "Role not found", status: "warning" });
         }
+        // find if staff has this role
+        const findStaff = await Staff.find({role: id});
+        if(findStaff.length > 0){
+            return res.status(200).json({ message: "Can't delete. Role is assigned to staff", status: "warning" });
+        }
+        await Roles.findByIdAndDelete(id);
         res.status(200).json({ message: "Role deleted", status: "success", role_info: delete_role});
     } catch (error) {
         res.status(500).json({ message: error.message, status: "error" });
