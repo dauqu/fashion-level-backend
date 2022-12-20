@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema({
         required: false,
         default: "active"
     },
+    gender: {
+        type: String,
+        required: true
+    },
     total_orders: {
         type: Number,
         required: true,

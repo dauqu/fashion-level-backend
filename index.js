@@ -82,7 +82,7 @@ const apiv1 = "/api/v1";
 
 app.use(`${apiv1}/admin`, require("./routes/admin"));
 // app.use(`${apiv1}/login`, require("./routes/login"));
-// app.use(`${apiv1}/register`, require("./routes/register"));
+app.use(`${apiv1}/register`, require("./routes/register"));
 app.use(`${apiv1}/profile`, require("./routes/profile"));
 app.use(`${apiv1}/categories`, require("./routes/categories"));
 app.use(`${apiv1}/notifications`, require("./routes/notifications"));

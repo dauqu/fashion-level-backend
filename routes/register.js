@@ -13,8 +13,15 @@ router.get("/", (req, res) => {
 
 // add new user
 router.post("/", validateRegister, async (req, res) => {
+
+const {first_name, last_name, email, password, gender, phone_no } = req.body;
   //Hash password
-  const hashed_password = await bcrypt.hash(req.body.password, 10);
+  const hashed_password = await bcrypt.hash(password, 10);
+
+
+  // generate random username
+  const random_username = Math.floor(100000 + Math.random() * 900000);
+
 
   //Generate random number for OTP
   const otp = Math.floor(100000 + Math.random() * 900000);
@@ -22,26 +29,28 @@ router.post("/", validateRegister, async (req, res) => {
   // Save user to database
 
   const save_user = new User({
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
+    first_name: first_name,
+    last_name: last_name,
     dp: req?.body?.dp || "https://styles.redditmedia.com/t5_2c83sr/styles/profileIcon_4dwzf4syg0w51.png",
-    phone_no: req.body.phone_no,
+    phone_no: phone_no,
     phone_verified: false,
-    email: req.body.email,
+    email: email,
     email_verified: false,
     otp: otp,
     address: "Edit your profile to add your address",
-    username: req.body.username,
+    username: random_username,
     password: hashed_password,
     language: "english",
     country: "india",
+    gender: gender
   });
 
   try {
-    await save_user.save();
+    const newuser = await save_user.save();
     // SendMail(req.body.email, "Verify your email", otp);
     res.status(200).json({
       message: "User created successfully",
+      user: newuser
     });
   } catch (error) {
     res.status(400).json({ message: error.message, status: "error" });
@@ -58,19 +67,16 @@ async function validateRegister(req, res, next) {
     last_name === "" ||
     phone_no === "" ||
     email === "" ||
-    username === "" ||
     password === "" ||
     first_name === undefined ||
     last_name === undefined ||
     phone_no === undefined ||
     email === undefined ||
-    username === undefined ||
     password === undefined ||
     first_name === null ||
     last_name === null ||
     phone_no === null ||
     email === null ||
-    username === null ||
     password === null
   ) {
     return res
