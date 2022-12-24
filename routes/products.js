@@ -158,6 +158,21 @@ router.get("/:id", async (req, res) => {
     }
 })
 
+// get products by subcategory
+router.get("/subcategory/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const get_product = await Products
+            .find({subcategory: id});
+            
+        if(get_product){
+            return res.status(200).json({message: "Product Found", status: "success", product: get_product});
+        }
+    } catch (e) {
+        return res.status(400).json({message: "Product Not Found", status: "error"});
+    }
+});
+
 
 // add new product 
 router.post('/', async (req, res) => {

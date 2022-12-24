@@ -3,6 +3,21 @@ const router = express.Router();
 const Category = require("../models/categories_schema");
 const Slugyfy = require("slugify");
 
+//Get all categories with populate
+router.get("/all", async (req, res) => {
+  try {
+    const categories = await Category.find({isSubcategory: false}).populate([
+      {
+        path: "subcategories",
+      }
+    ]);
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 //Get all categories
 router.get("/", async (req, res) => {
   try {

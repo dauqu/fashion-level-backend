@@ -99,6 +99,18 @@ router.get("/", async (req, res) => {
     }
 })
 
+// create new user
+router.post("/", async (req, res) => {
+    try {
+        const findUser = await User(req.body);
+        const user = await findUser.save();
+        return res.status(200).json({ message: "User created", status: "success", user })
+    } catch (e) {
+        return res.status(500).json({ message: e.message, status: "error" })
+    }
+})
+
+
 // router.get("/order-details/:status", async (req, res) => {
 //     try {
 //         const {status} = req.params;

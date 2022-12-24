@@ -37,10 +37,10 @@ const {first_name, last_name, email, password, gender, phone_no } = req.body;
     email: email,
     email_verified: false,
     otp: otp,
-    address: "Edit your profile to add your address",
     username: random_username,
     password: hashed_password,
     language: "english",
+    city: "Delhi",
     country: "india",
     gender: gender
   });
